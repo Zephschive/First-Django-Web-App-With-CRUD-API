@@ -1,6 +1,8 @@
 from django.urls import path
-from . import views
+from playground import views
 
 urlpatterns = [
-    path('hello/',views.say_hello)
+    
+    url(r'^department$',views.departmentApi),
+    url(r'^department/([0-9]+)$',views.departmentApi)
 ]

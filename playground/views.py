@@ -12,6 +12,9 @@ def say_hello(request):
     return render(request, 'hello.html', {'name':'Mosh'})
   
 
+def trigger_error(request):
+    # This will raise a ValueError, which should be caught by your middleware
+    raise ValueError("This is a test exception.")
 
 # @csrf_exempt
 # def departmentApi(request,id=0):
@@ -127,7 +130,7 @@ def say_hello(request):
 #         return JsonResponse("Deleted Successfully", safe=False)
    
 @csrf_exempt
-def NetflixApi(request):
+def NetflixApi(request,id=0):
     if request.method == 'GET':
         net = Netflix.objects.all()
         net_serializer=NetflixSerializer(net,many=True)
@@ -136,21 +139,23 @@ def NetflixApi(request):
             "results": net_serializer.data
          }, safe=False)
     elif request.method == 'POST':
-        net_data=JSONParser().parse(request)
-        net_serializer=NetflixSerializer(data=net_data)
+        net_data = JSONParser().parse(request)
+        net_serializer = NetflixSerializer(data=net_data)
         if net_serializer.is_valid():
             net_serializer.save()
             return JsonResponse({
                 "message": "Added successfully",
                 "results": [net_serializer.data]
-            }, safe=False)
+            }, safe=False) 
         return JsonResponse({
             "message": "Failed to add",
-            "results": []
+            "results": [],
+            "errors": net_serializer.errors  
         }, safe=False)
+
     elif request.method == 'PUT':
         net_data = JSONParser().parse(request)
-        net = Netflix.objects.get(show_id=net_data['show_id'])
+        net = Netflix.objects.get(show_id=net_data["show_id"])
         net_serializer = NetflixSerializer(net, data=net_data)
         if net_serializer.is_valid():
             net_serializer.save()

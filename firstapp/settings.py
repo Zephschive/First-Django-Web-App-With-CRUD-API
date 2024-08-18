@@ -23,9 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-tl&$gw1who%uy*q*&j$hhb3ny14!d4lyby(h1!a=ewz#x&p1kt'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
 
 
 # Application definition
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
 CORS_ORIGIN_ALLOW_ALL = True
 
 MIDDLEWARE = [
+    'playground.middleware.GlobalExceptionHandlerMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -55,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'firstapp.urls'
@@ -77,9 +80,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'firstapp.wsgi.application'
 
-REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': '.my_app.utils.custom_exception_handler'
-}
 
 
 # Database

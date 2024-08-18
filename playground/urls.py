@@ -11,5 +11,7 @@ urlpatterns = [
     # re_path(r'^employee/([0-9]+)$',views.employeeApi)
     
     re_path(r'^netflix$',views.NetflixApi),
-    re_path(r'^netflix/([0-9]+)$',views.NetflixApi)
+    re_path(r'^netflix/(s[0-9]+)$',views.NetflixApi),
+    
+    re_path(r'^trigger-error/',views.trigger_error)
 ]

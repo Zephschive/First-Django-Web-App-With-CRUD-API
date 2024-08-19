@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.deprecation import MiddlewareMixin
 
-# Configure logging
+
 logger = logging.getLogger(__name__)
 
 class GlobalExceptionHandlerMiddleware(MiddlewareMixin):
@@ -12,11 +12,11 @@ class GlobalExceptionHandlerMiddleware(MiddlewareMixin):
             logger.error(f"Object not found: {str(exception)}", exc_info=True)
             return JsonResponse({
                 "message": "Resource not found",
-                "details": str(exception)  # Omit this in production for security
-            }, status=404)
+                "details": str(exception) 
+            }, status=404)      
         else:
             logger.error(f"Unhandled exception: {str(exception)}", exc_info=True)
             return JsonResponse({
                 "message": "An unexpected error occurred",
-                "details": str(exception)  # Omit this in production for security
+                "details": str(exception)
             }, status=500)

@@ -165,7 +165,8 @@ def NetflixApi(request,id=0):
             }, safe=False)
         return JsonResponse({
             "message": "Failed to update field",
-            "results": []
+            "results": [],
+            "errors": net_serializer.errors  
         }, safe=False)
 
     elif request.method == 'PATCH':
@@ -180,7 +181,8 @@ def NetflixApi(request,id=0):
             }, safe=False)
         return JsonResponse({
             "message": "Failed to update field",
-            "results": []
+            "results": [],
+            "errors": net_serializer.errors  
         }, safe=False)
 
     elif request.method == 'DELETE':

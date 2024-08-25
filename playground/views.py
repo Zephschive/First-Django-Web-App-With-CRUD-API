@@ -7,6 +7,7 @@ from django.http.response import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 from playground.models import Netflix
 from playground.serializers import NetflixSerializer
+import logging
 
 def say_hello(request):
     return render(request, 'hello.html', {'name':'Mosh'})
@@ -191,36 +192,24 @@ def trigger_error(request):
 #             "message": "Deleted Successfully"
 #         }, safe=False)
 
+logger = logging.getLogger(__name__)
 
-@csrf_exempt
-@csrf_exempt
-def get_netflix_by_id(request, id):
+def get_netflix_by_id(id):
     try:
-        # Log the ID being fetched
         logger.info(f"Fetching Netflix record with ID: {id}")
-        
-        # Fetch the Netflix record using the ID
         net = Netflix.objects.get(show_id=id)
-        
-        # Serialize the fetched data
         net_serializer = NetflixSerializer(net)
-        
-        # Return the serialized data in the specified JSON format
         return JsonResponse({
             "message": "Fetched record successfully",
             "results": [net_serializer.data]
         }, safe=False)
-    
     except ObjectDoesNotExist:
-        # Log and return a 404 response if the record is not found
         logger.warning(f"Netflix record with ID {id} not found.")
         return JsonResponse({
             "message": f"Netflix record with ID {id} not found."
         }, status=404)
 
-
-@csrf_exempt
-def get_netflix(request):
+def get_netflix():
     net = Netflix.objects.all()
     net_serializer = NetflixSerializer(net, many=True)
     return JsonResponse({
@@ -228,7 +217,6 @@ def get_netflix(request):
         "results": net_serializer.data
     }, safe=False)
 
-@csrf_exempt
 def post_netflix(request):
     net_data = JSONParser().parse(request)
     net_serializer = NetflixSerializer(data=net_data)
@@ -244,67 +232,93 @@ def post_netflix(request):
         "errors": net_serializer.errors
     }, safe=False)
 
-@csrf_exempt
 def put_netflix(request, id):
-    if request.method == 'PUT':
-        try:
-            net = Netflix.objects.get(show_id=id)
-        except ObjectDoesNotExist:
-            return JsonResponse({
-                "message": f"Netflix record with ID {id} not found."
-            }, status=404)
-
-        net_data = JSONParser().parse(request)
-        net_serializer = NetflixSerializer(net, data=net_data)
-        if net_serializer.is_valid():
-            net_serializer.save()
-            return JsonResponse({
-                "message": "Updated successfully",
-                "results": [net_serializer.data]
-            }, safe=False)
+    try:
+       
+        net = Netflix.objects.get(show_id=id)
+    except ObjectDoesNotExist:
         return JsonResponse({
-            "message": "Failed to update",
-            "results": [],
-            "errors": net_serializer.errors
+            "message": f"Netflix record with ID {id} not found."
+        }, status=404)
+    
+    net_data = JSONParser().parse(request)
+    net_serializer = NetflixSerializer(net, data=net_data)
+    if net_serializer.is_valid():
+        net_serializer.save()
+        return JsonResponse({
+            "message": "Updated successfully",
+            "results": [net_serializer.data]
         }, safe=False)
-    else:
-        return JsonResponse({
-            "message": "Invalid request method"
-        }, status=405)
+    return JsonResponse({
+        "message": "Failed to update",
+        "results": [],
+        "errors": net_serializer.errors
+    }, safe=False)
 
-@csrf_exempt
 def patch_netflix(request, id):
     try:
         net = Netflix.objects.get(show_id=id)
     except ObjectDoesNotExist:
         return JsonResponse({
-            "message": "Resource not found"
+            "message": f"Netflix record with ID {id} not found."
         }, status=404)
     
     net_data = JSONParser().parse(request)
-    net_serializer = NetflixSerializer(net, data=net_data, partial=True)
-    if net_serializer.is_valid():
-        net_serializer.save()
+
+    # Ensure only one field is provided in the patch request
+    if len(net_data) != 1:
         return JsonResponse({
-            "message": "Field updated successfully",
-            "results": [net_serializer.data]
-        }, safe=False)
+            "message": "Only one field can be updated at a time.",
+            "results": []
+        }, status=400)
+    
+    # Get the field to be updated and its value
+    field_to_update = list(net_data.keys())[0]
+    field_value = net_data[field_to_update]
+
+    # Update the specific field
+    setattr(net, field_to_update, field_value)
+    net.save()
+
+    net_serializer = NetflixSerializer(net)
     return JsonResponse({
-        "message": "Failed to update field",
-        "results": [],
-        "errors": net_serializer.errors
+        "message": "Field updated successfully",
+        "results": [net_serializer.data]
     }, safe=False)
 
-@csrf_exempt
+
 def delete_netflix(request, id):
     try:
         net = Netflix.objects.get(show_id=id)
     except ObjectDoesNotExist:
         return JsonResponse({
-            "message": "Resource not found"
+            "message": f"Netflix record with ID {id} not found."
         }, status=404)
     
     net.delete()
     return JsonResponse({
         "message": "Deleted Successfully"
     }, safe=False)
+
+@csrf_exempt
+def NetflixApi(request, id=None):
+    if request.method == 'GET':
+        if id:
+            return get_netflix_by_id(id) 
+        else:
+            return get_netflix()
+    
+    elif request.method == 'POST':
+        return post_netflix(request)
+    
+    elif request.method == 'PUT':
+        return put_netflix(request, id)
+    
+    elif request.method == 'PATCH':
+        return patch_netflix(request, id)
+    
+    elif request.method == 'DELETE':
+        return delete_netflix(request, id)
+
+
+

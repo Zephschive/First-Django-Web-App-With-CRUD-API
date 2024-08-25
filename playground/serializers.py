@@ -18,9 +18,10 @@ class NetflixSerializer(serializers.ModelSerializer):
         
 
     def validate(self, data):
-           if not (data.get('show_id').startswith("s")):
+        
+        if not (data.get('show_id').startswith("s")):
                     raise serializers.ValidationError("show_id should start with an s")
-           elif not (data.get('type') == ['Movie','TV Show', 'News']):
+        elif not (data.get('type') ==  'News'):
                     raise serializers.ValidationError("type must be equal to either,'Movie','TV Show', 'News'")
            
-                    
+        return data;                     

@@ -242,7 +242,7 @@ def put_netflix(request, id):
         }, status=404)
     
     net_data = JSONParser().parse(request)
-    net_serializer = NetflixSerializer(net, data=net_data)
+    net_serializer = NetflixSerializer(net, data=net_data, partial=True)
     if net_serializer.is_valid():
         net_serializer.save()
         return JsonResponse({
@@ -264,7 +264,7 @@ def patch_netflix(request, id):
         }, status=404)
     
     net_data = JSONParser().parse(request)
-
+    print(net_data)
     # Ensure only one field is provided in the patch request
     if len(net_data) != 1:
         return JsonResponse({
@@ -274,6 +274,7 @@ def patch_netflix(request, id):
     
     # Get the field to be updated and its value
     field_to_update = list(net_data.keys())[0]
+  
     field_value = net_data[field_to_update]
 
     # Update the specific field

@@ -7,7 +7,7 @@ urlpatterns = [
     
    
     re_path(r'^netflix/(?P<id>s\d+)/$', views.NetflixApi),  
-    
+    re_path(r'^netflix/$', views.NetflixApi),  
 ]
 
     

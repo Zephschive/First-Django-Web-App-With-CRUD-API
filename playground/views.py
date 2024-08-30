@@ -265,19 +265,19 @@ def patch_netflix(request, id):
     
     net_data = JSONParser().parse(request)
     print(net_data)
-    # Ensure only one field is provided in the patch request
+   
     if len(net_data) != 1:
         return JsonResponse({
             "message": "Only one field can be updated at a time.",
             "results": []
         }, status=400)
     
-    # Get the field to be updated and its value
+    
     field_to_update = list(net_data.keys())[0]
   
     field_value = net_data[field_to_update]
 
-    # Update the specific field
+
     setattr(net, field_to_update, field_value)
     net.save()
 

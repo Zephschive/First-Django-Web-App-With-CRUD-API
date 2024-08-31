@@ -20,7 +20,7 @@ class NetflixSerializer(serializers.ModelSerializer):
 class MovieTypesSerializer(serializers.ModelSerializer):
     class Meta:
         model = MovieTypes
-        fields= ('TID',' TypesOfMovies')               
+        fields= ('TID','TypesOfMovies')               
         
 class CountrySerializer(serializers.ModelSerializer):
     class Meta:

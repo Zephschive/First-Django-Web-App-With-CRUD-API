@@ -30,3 +30,11 @@ class Netflix(models.Model):
     listed_in = models.CharField(max_length=200)
     description = models.CharField(max_length=200)
       
+class MovieTypes(models.Model):
+    TID = models.AutoField(primary_key=True)
+    TypesOfMovies = models.CharField(max_length=20)
+    
+class Country(models.Model):
+    CID = models.AutoField(primary_key=True)
+    Country = models.CharField(max_length=20)    
+          

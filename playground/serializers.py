@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from playground.models import Netflix
+from playground.models import Netflix,Country,MovieTypes
 
 # class DepartmentSerializer(serializers.ModelSerializer):
 #     class Meta:
@@ -16,4 +16,13 @@ class NetflixSerializer(serializers.ModelSerializer):
         model= Netflix
         fields =('show_id', 'type', 'title', 'director', 'cast_members', 'country', 'date_added', 'release_year', 'rating', 'duration', 'listed_in', 'description')
         
-                  
+
+class MovieTypesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MovieTypes
+        fields= ('TID',' TypesOfMovies')               
+        
+class CountrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Country
+        fields= ('CID','Country')                       
